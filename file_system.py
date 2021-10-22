@@ -40,7 +40,7 @@ def build_os_tree(full_path: str) -> tuple:
 
 
 # root_dir = '/'
-root_dir = '/Users/dumanskij/Документы Mac/СПбГЭУ/PROGI/GIT all/file_explorer'  # временно
+root_dir = '/Users'  # временно
 print('---ПРОЦЕСС НАЧАТ---')
 start_time = time.time()
 os_tree = dict([build_os_tree(root_dir)])

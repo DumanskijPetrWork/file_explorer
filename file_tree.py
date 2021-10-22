@@ -112,5 +112,5 @@ class FileTree:
         print('---ПРОЦЕСС ЗАВЕРШЕН---')
 
 
-os_tree = FileTree()
+os_tree = FileTree()  # '/Users'
 os_tree.build_tree()
