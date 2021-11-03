@@ -1,5 +1,5 @@
 import os
-from send2trash import send2trash
+# from send2trash import send2trash
 from os import path, listdir
 import time  # временно для замера скорости
 
@@ -15,7 +15,7 @@ class Node:
         try:
             return self.branches[_branch]
         except Exception:
-            return False
+            return []
 
 
 def discover_node(_full_path: str, _parent: Node):
@@ -70,18 +70,22 @@ class FileTree:
             return False
 
     def path_down(self, _branch: str):
-        _down = self.current.get_branch(_branch)
-        if _down:
-            self.current = _down
-            self.current_path = path.join(self.current_path, _down.basename)
-            return True
-        else:
+        try:
+            _down = self.current.get_branch(_branch)
+            _new_path = path.join(self.current_path, _down.basename)
+            if path.isdir(_new_path):
+                self.current = _down
+                self.current_path = _new_path
+                return True
+            else:
+                return False
+        except AttributeError:
             return False
 
     def delete_node(self, _node: Node):
         _size = _node.size
         try:
-            send2trash(path.join(self.current_path, _node.basename))
+            # send2trash(path.join(self.current_path, _node.basename))
             _current = _node.parent
             while _current:
                 _current.size -= _node.size
@@ -112,5 +116,6 @@ class FileTree:
         print('---ПРОЦЕСС ЗАВЕРШЕН---')
 
 
-os_tree = FileTree()  # '/Users'
-os_tree.build_tree()
+if __name__ == '__main__':
+    os_tree = FileTree('/Users/dumanskij')  # '/Users'
+    os_tree.build_tree()
