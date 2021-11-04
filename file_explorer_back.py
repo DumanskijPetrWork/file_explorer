@@ -12,7 +12,7 @@ class BackEnd(QtWidgets.QMainWindow):
         self._front_end.setupUi(self)
         self.init_FrontEnd()
 
-        self.os_tree = FileTree('/Users/dumanskij')
+        self.os_tree = FileTree('/Users/dumanskij/Документы mac')
         self.os_tree.build_tree()
 
         self.reset_info()
@@ -20,11 +20,10 @@ class BackEnd(QtWidgets.QMainWindow):
     # Инициализация функционала
 
     def init_FrontEnd(self):
-
         # Текст кнопок
         self._front_end.up_button.setText("UP")
         self._front_end.down_button.setText("DOWN")
-        self._front_end.pushButton_3.setText("PushButton")
+        self._front_end.pushButton_3.setText("DELETE")
 
         # Обработка нажатий на кнопки
         self._front_end.up_button.clicked.connect(self.up_button_pressed)
@@ -37,10 +36,11 @@ class BackEnd(QtWidgets.QMainWindow):
         self._front_end.file_path.setText('   ' + self.os_tree.current_path)
         self._front_end.branches_list.clear()
         model_branches_list = self._front_end.branches_list.model()
-        for name in self.os_tree.current.branches:
-            item = QStandardItem(name)
-            item.setBackground(QColor('white'))
-            model_branches_list.appendRow(item)
+        if path.isdir(self.os_tree.current_path):
+            for name in self.os_tree.current.branches:
+                item = QStandardItem(name)
+                item.setBackground(QColor('white'))
+                model_branches_list.appendRow(item)
         # self._front_end.branches_list.addItems(self.os_tree.current.branches)
 
     # Движение вверх
@@ -58,7 +58,8 @@ class BackEnd(QtWidgets.QMainWindow):
     # Удаление файла / директории
 
     def pushButton_3_pressed(self):
-        pass
+        self.os_tree.delete_node()
+        self.reset_info()
 
 
 if __name__ == '__main__':

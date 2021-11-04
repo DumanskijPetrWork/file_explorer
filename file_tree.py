@@ -66,35 +66,33 @@ class FileTree:
             self.current = self.current.parent
             self.current_path = path.dirname(self.current_path)
             return True
-        else:
-            return False
+        return False
 
     def path_down(self, _branch: str):
-        try:
-            _down = self.current.get_branch(_branch)
-            _new_path = path.join(self.current_path, _down.basename)
-            if path.isdir(_new_path):
+        if path.isdir(self.current_path) & isinstance(self.current.branches, dict):
+            if len(self.current.branches):
+                _down = self.current.get_branch(_branch)
                 self.current = _down
-                self.current_path = _new_path
+                self.current_path = path.join(self.current_path, _down.basename)
                 return True
-            else:
-                return False
-        except AttributeError:
-            return False
+        return False
 
-    def delete_node(self, _node: Node):
-        _size = _node.size
-        try:
-            # send2trash(path.join(self.current_path, _node.basename))
-            _current = _node.parent
-            while _current:
-                _current.size -= _node.size
-                _current = _current.parent
-            path_up()
-            del self.current.branches[_node.basename]
-            return True
-        except OSError:
-            return False
+    def delete_node(self):
+        _file = self.current
+        if _file != self.root:
+            try:
+                # send2trash(self.current_path)
+                _current = _file.parent
+                print(_current)
+                while _current:
+                    _current.size -= self.current.size
+                    _current = _current.parent
+                self.path_up()
+                del _file.parent.branches[_file.basename]
+                return True
+            except OSError:
+                return False
+        return False
 
     def build_tree(self):
         print('---ПРОЦЕСС НАЧАТ---')
