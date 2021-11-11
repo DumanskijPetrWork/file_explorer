@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QStandardItem, QColor
+from PyQt5.QtWidgets import QMessageBox
 from file_explorer import Ui_MainWindow
 from file_tree import *
 
@@ -36,6 +37,13 @@ class BackEnd(QtWidgets.QMainWindow):
         self._front_end.up_button.setStyleSheet(self.styleSheet_gray)
         self._front_end.down_button.setStyleSheet(self.styleSheet_white)
 
+        # Окно предупреждения
+        self.msg = QMessageBox()
+        self.msg.setIcon(QMessageBox.Critical)
+        self.msg.setText("Доступ запрещен")
+        self.msg.setInformativeText("Невозможно удалить файл / директорию")
+        self.msg.setStandardButtons(QMessageBox.Ok)
+
     # Обновление информации
     def reset_info(self):
         self._front_end.file_path.setText('   ' + self.os_tree.current_path)
@@ -64,6 +72,9 @@ class BackEnd(QtWidgets.QMainWindow):
             print('поменять цвет кнопки UP на серый')  # Если цвет кнопки не серый
             self._front_end.up_button.setStyleSheet(self.styleSheet_gray)
 
+        if self.os_tree.current == self.os_tree.root:
+            self._front_end.pushButton_3.setStyleSheet(self.styleSheet_gray)
+
     # Движение вниз
     def down_button_pressed(self):
         if self.os_tree.is_there_path_down():
@@ -80,16 +91,21 @@ class BackEnd(QtWidgets.QMainWindow):
             print('поменять цвет кнопки DOWN на серый')  # Если цвет кнопки не серый
             self._front_end.down_button.setStyleSheet(self.styleSheet_gray)
 
+        if self.os_tree.current != self.os_tree.root:
+            self._front_end.pushButton_3.setStyleSheet(self.styleSheet_white)
+
     # Удаление файла / директории
     def pushButton_3_pressed(self):
         _file = self.os_tree.current
         if _file != self.os_tree.root:
+            self._front_end.pushButton_3.setStyleSheet(self.styleSheet_white)
             try:
                 self.os_tree.delete_node(_file)
                 self.reset_info()
             except OSError:
-                print('Всплывающее окно')
-
+                self.msg.show()
+        if self.os_tree.current == self.os_tree.root:
+            self._front_end.pushButton_3.setStyleSheet(self.styleSheet_gray)
 
 if __name__ == '__main__':
     print('-----start-----\n')
