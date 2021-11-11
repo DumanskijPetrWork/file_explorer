@@ -61,38 +61,38 @@ class FileTree:
         self.current = self.root
         self.current_path = _root
 
-    def path_up(self):
+    def is_there_path_up(self):
         if self.current.parent:
-            self.current = self.current.parent
-            self.current_path = path.dirname(self.current_path)
             return True
         return False
 
-    def path_down(self, _branch: str):
+    def path_up(self):
+        self.current = self.current.parent
+        self.current_path = path.dirname(self.current_path)
+
+    def is_there_path_down(self):
         if path.isdir(self.current_path) & isinstance(self.current.branches, dict):
             if len(self.current.branches):
-                _down = self.current.get_branch(_branch)
-                self.current = _down
-                self.current_path = path.join(self.current_path, _down.basename)
                 return True
         return False
 
-    def delete_node(self):
-        _file = self.current
-        if _file != self.root:
-            try:
-                # send2trash(self.current_path)
-                _current = _file.parent
-                print(_current)
-                while _current:
-                    _current.size -= self.current.size
-                    _current = _current.parent
-                self.path_up()
-                del _file.parent.branches[_file.basename]
-                return True
-            except OSError:
-                return False
-        return False
+    def path_down(self, _branch: str):
+        _down = self.current.get_branch(_branch)
+        self.current = _down
+        self.current_path = path.join(self.current_path, _down.basename)
+
+    def delete_node(self, _file: Node):
+        try:
+            # send2trash(self.current_path)
+            _current = _file.parent
+            while _current:
+                _current.size -= self.current.size
+                _current = _current.parent
+            self.path_up()
+            del _file.parent.branches[_file.basename]
+            return True
+        except OSError or PermissionError:
+            return False
 
     def build_tree(self):
         print('---ПРОЦЕСС НАЧАТ---')

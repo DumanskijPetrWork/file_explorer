@@ -6,6 +6,9 @@ from file_tree import *
 
 
 class BackEnd(QtWidgets.QMainWindow):
+    styleSheet_white = "background-color : white"
+    styleSheet_gray = "background-color : gray"
+
     def __init__(self):
         super(BackEnd, self).__init__()
         self._front_end = Ui_MainWindow()
@@ -18,7 +21,6 @@ class BackEnd(QtWidgets.QMainWindow):
         self.reset_info()
 
     # Инициализация функционала
-
     def init_FrontEnd(self):
         # Текст кнопок
         self._front_end.up_button.setText("UP")
@@ -30,8 +32,11 @@ class BackEnd(QtWidgets.QMainWindow):
         self._front_end.down_button.clicked.connect(self.down_button_pressed)
         self._front_end.pushButton_3.clicked.connect(self.pushButton_3_pressed)
 
-    # Обновление информации
+        # Начальная обработка кнопок
+        self._front_end.up_button.setStyleSheet(self.styleSheet_gray)
+        self._front_end.down_button.setStyleSheet(self.styleSheet_white)
 
+    # Обновление информации
     def reset_info(self):
         self._front_end.file_path.setText('   ' + self.os_tree.current_path)
         self._front_end.branches_list.clear()
@@ -44,22 +49,46 @@ class BackEnd(QtWidgets.QMainWindow):
         # self._front_end.branches_list.addItems(self.os_tree.current.branches)
 
     # Движение вверх
-
     def up_button_pressed(self):
-        self.os_tree.path_up()
-        self.reset_info()
+        if self.os_tree.is_there_path_up():
+            print('поменять цвет кнопки UP на белый')  # Если цвет кнопки не белый
+            self._front_end.up_button.setStyleSheet(self.styleSheet_white)
+
+            self.os_tree.path_up()
+            self.reset_info()
+
+            print('поменять цвет кнопки DOWN на белый')  # Если цвет кнопки не белый
+            self._front_end.down_button.setStyleSheet(self.styleSheet_white)
+
+        if not self.os_tree.is_there_path_up():  # Двойная проверка (else + после действия)
+            print('поменять цвет кнопки UP на серый')  # Если цвет кнопки не серый
+            self._front_end.up_button.setStyleSheet(self.styleSheet_gray)
 
     # Движение вниз
-
     def down_button_pressed(self):
-        self.os_tree.path_down(self._front_end.branches_list.currentText())
-        self.reset_info()
+        if self.os_tree.is_there_path_down():
+            print('поменять цвет кнопки DOWN на белый')  # Если цвет кнопки не белый
+            self._front_end.down_button.setStyleSheet(self.styleSheet_white)
+
+            self.os_tree.path_down(self._front_end.branches_list.currentText())
+            self.reset_info()
+
+            print('поменять цвет кнопки UP на белый')  # Если цвет кнопки не белый
+            self._front_end.up_button.setStyleSheet(self.styleSheet_white)
+
+        if not self.os_tree.is_there_path_down():  # Двойная проверка (else + после действия)
+            print('поменять цвет кнопки DOWN на серый')  # Если цвет кнопки не серый
+            self._front_end.down_button.setStyleSheet(self.styleSheet_gray)
 
     # Удаление файла / директории
-
     def pushButton_3_pressed(self):
-        self.os_tree.delete_node()
-        self.reset_info()
+        _file = self.os_tree.current
+        if _file != self.os_tree.root:
+            try:
+                self.os_tree.delete_node(_file)
+                self.reset_info()
+            except OSError:
+                print('Всплывающее окно')
 
 
 if __name__ == '__main__':
